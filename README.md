@@ -50,19 +50,22 @@ Install MariaDB on your server or local machine. You can download it from MariaD
 ```bash
 mysql -u root -p
 ```
-
-- **Create a database for the application:**
-
+# Create a database for the application
 ```bash
 CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+# Create a user for the database
 ```bash
-Create a user and grant privileges to the database:CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+```
+# Grant all privileges to the user on the database
 ```bash
 GRANT ALL PRIVILEGES ON asset_management_db.* TO 'assets'@'localhost';
+```
+# Flush privileges to apply changes
 ```bash
 FLUSH PRIVILEGES;
 ```
-
 4. Run migrations:
    ```bash
    python manage.py migrate
