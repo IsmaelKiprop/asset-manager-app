@@ -209,12 +209,6 @@ class Project(models.Model):
     location = models.CharField(max_length=100)
     budget = models.DecimalField(max_digits=10, decimal_places=2)
 
-# Budget model
-class Budget(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-
 # Warehouse model
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
@@ -234,13 +228,180 @@ class StockRequest(models.Model):
     request_date = models.DateField()
     requester = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
-# Models for Intangible Assets
 
-class IntangibleAsset(models.Model):
-    name = models.CharField(max_length=100)
+# Models for Finance Management
+
+# Savings model
+class Savings(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    goal_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    target_date = models.DateField()
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Budget model
+class Budget(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     category = models.CharField(max_length=100)
-    expiration_date = models.DateField()
-    document = models.FileField(upload_to='intangible_assets/')
+    budget_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    actual_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+
+# Bank integration model
+class BankIntegration(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=100)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Bill manager model
+class Bill(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+
+# Analytics model
+class Analytics(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    cash_flow = models.DecimalField(max_digits=10, decimal_places=2)
+    budgeting = models.DecimalField(max_digits=10, decimal_places=2)
+    net_worth = models.DecimalField(max_digits=10, decimal_places=2)
+    transactions = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Assets valuation model
+class AssetsValuation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    asset_name = models.CharField(max_length=100)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+
+# Credit score tracking model
+class CreditScore(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    score = models.PositiveIntegerField()
+    date = models.DateField()
+
+# Customizable alerts model
+class CustomizableAlert(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    alert_type = models.CharField(max_length=100)
+    message = models.TextField()
+    date = models.DateField()
+
+# Financial growth tracking model
+class FinancialGrowth(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    growth_type = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+
+# Checking account model
+class CheckingAccount(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    account_number = models.CharField(max_length=100)
+    digital_check = models.BooleanField(default=True)
+
+# Insurance model
+class Insurance(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=100)
+    premium_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    coverage_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Investing model
+class Investing(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    goal_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    target_date = models.DateField()
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Integration with accounting software model
+class AccountingSoftwareIntegration(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    software_name = models.CharField(max_length=100)
+    integration_type = models.CharField(max_length=100)
+
+# Models for Intangible Assets Management
+
+# Intangible Asset Industry model
+class IntangibleAssetIndustry(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+# Intangible Asset Category model
+class IntangibleAssetCategory(models.Model):
+    name = models.CharField(max_length=100)
+    industry = models.ForeignKey(IntangibleAssetIndustry, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+# Intangible Asset model
+class IntangibleAsset(models.Model):
+    category = models.ForeignKey(IntangibleAssetCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    date_registered = models.DateField()
+    expiring_date = models.DateField(null=True, blank=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-date_created', 'name']
+
+# Asset Document model
+class AssetDocument(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='asset_documents/')
+    description = models.TextField()
+
+# Model for people concerned
+class ConcernedPeople(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+# Sorting options
+SORT_OPTIONS = [
+    ('category', 'Category'),
+    ('date_created_asc', 'Date Created (Ascending)'),
+    ('date_created_desc', 'Date Created (Descending)'),
+    ('date_modified_asc', 'Date Modified (Ascending)'),
+    ('date_modified_desc', 'Date Modified (Descending)'),
+    ('expiring_date_asc', 'Expiring Date (Ascending)'),
+    ('expiring_date_desc', 'Expiring Date (Descending)'),
+]
+
+# Notification for expiring assets
+class ExpiringAsset(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    notification_date = models.DateField()
+    notified = models.BooleanField(default=False)
+
+# Total Value of all assets (computed property)
+class TotalAssetValue(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    total_value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+
+    def calculate_total_value(self):
+        total = IntangibleAsset.objects.filter(owner=self.user).aggregate(Sum('value'))['value__sum']
+        self.total_value = total if total else 0
+        self.save()
+
+# Add, Edit, and Delete functionalities are handled through Django admin panel
+
+
+
+
+
 
 # Models for Machinery and Vehicles
 
