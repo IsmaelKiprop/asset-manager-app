@@ -155,6 +155,54 @@ class FinancialReport(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+# Models for Company Details
+
+class Company(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    number_of_employees = models.PositiveIntegerField()
+    industry = models.CharField(max_length=100)
+
+# Models for Chat Functionality
+
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(CustomUser, related_name='received_messages', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+# Models for Multicurrency Valuation
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3, unique=True)
+    name = models.CharField(max_length=50)
+
+class Valuation(models.Model):
+    asset = models.OneToOneField('Asset', on_delete=models.CASCADE)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+
+# Models for Asset Management
+
+class Asset(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    description = models.TextField()
+    photo = models.ImageField(upload_to='asset_photos/')
+
+# Models for Gantt Charts and Analytics
+
+class Analytics(models.Model):
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    # Add fields for analytics data
+
+# Models for Gantt Charts and Analytics
+
+class Analytics(models.Model):
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    # Add fields for analytics data
+
+
 # Models for Asset Selling and Leasing using Blockchain (to be implemented)
 class AssetTransaction(models.Model):
     asset = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
