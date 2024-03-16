@@ -73,7 +73,11 @@ FLUSH PRIVILEGES;
 5. **Start the Django development server:**
    ```bash
    python manage.py runserver
-
+   ```
+- **Access your application at:**
+  ```bash
+  http://localhost:8000/api/v1
+  ```
 6. **Navigate to the frontend directory:**
    ```bash
    cd asset_management_frontend
