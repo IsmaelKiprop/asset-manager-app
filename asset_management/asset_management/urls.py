@@ -20,6 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('inventory_management.urls')),  # Add your app's API endpoints here
+    path('api/v1/', include('inventory_management.urls')),  # Add your app's API endpoints here
     # Add URLs for other apps' API endpoints if any
 ]
