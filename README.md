@@ -54,8 +54,12 @@ mysql -u root -p
 - **Create a database for the application:**
 
 ```bash
-CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;Create a user and grant privileges to the database:CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```bash
+Create a user and grant privileges to the database:CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+```bash
 GRANT ALL PRIVILEGES ON asset_management_db.* TO 'assets'@'localhost';
+```bash
 FLUSH PRIVILEGES;
 ```
 
