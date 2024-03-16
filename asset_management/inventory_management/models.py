@@ -52,7 +52,7 @@ class AuthToken(models.Model):
     def __str__(self):
         return self.key
 
-# New models for additional features
+# Models for additional features
 
 class InventoryItem(models.Model):
     category = models.CharField(max_length=100)
@@ -79,4 +79,31 @@ class Machinery(models.Model):
     service_history = models.TextField()
     location = models.CharField(max_length=100)
 
-# Define other models for remaining features similarly...
+class HardwareSoftware(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    warranty_information = models.TextField()
+    repair_history = models.TextField()
+
+class Furniture(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    warranty_information = models.TextField()
+    repair_history = models.TextField()
+
+class Investment(models.Model):
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=100)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+
+class FixedAsset(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    warranty_information = models.TextField()
+    service_history = models.TextField()
+    location = models.CharField(max_length=100)
+
+class Contract(models.Model):
+    category = models.CharField(max_length=100)
+    expiration_date = models.DateField()
+    document = models.FileField(upload_to='contracts/')
