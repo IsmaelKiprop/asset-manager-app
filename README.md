@@ -32,17 +32,34 @@ The Asset Management Software is a web application designed to help businesses m
    ```bash
    git clone <https://github.com/IsmaelKiprop/asset-manager-app.git>
 
-2. Navigate to the backend directory:
+## Setting Up the Backend and Database
+
+To set up the backend and configure the database for the Asset Management Software, follow these steps:
+
+1. **Navigate to the Backend Directory:**
    ```bash
    cd asset_management_backend
 
-3. Install dependencies:
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
 
-4. Set up MariaDB and configure the database settings in settings.py.
+3. **Set Up MariaDB:**
+   
+Install MariaDB on your server or local machine. You can download it from MariaDB Downloads.Start the MariaDB server using appropriate commands for your operating system.Access the MariaDB shell using the command:
+```bash
+mysql -u root -p
+```
 
-5. Run migrations:
+- **Create a database for the application:**
+
+```bash
+CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;Create a user and grant privileges to the database:CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+GRANT ALL PRIVILEGES ON asset_management_db.* TO 'assets'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+4. Run migrations:
    ```bash
    python manage.py migrate
 
