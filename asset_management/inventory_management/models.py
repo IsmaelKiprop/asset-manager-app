@@ -196,12 +196,6 @@ class Analytics(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     # Add fields for analytics data
 
-# Models for Gantt Charts and Analytics
-
-class Analytics(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-    # Add fields for analytics data
-
 
 # Models for Asset Selling and Leasing using Blockchain (to be implemented)
 class AssetTransaction(models.Model):
