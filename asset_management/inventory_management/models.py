@@ -232,16 +232,6 @@ class StockRequest(models.Model):
     request_date = models.DateField()
     requester = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
-    # Other fields and functionalities can be added as needed
-
-# Other related models and functionalities can be added similarly
-# Models for Expense Management
-
-class Expense(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField()
-    date = models.DateField()
 
 # Models for Intangible Assets
 
@@ -344,10 +334,6 @@ class ChatMessage(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 # Models for Multicurrency Valuation
-
-class Currency(models.Model):
-    code = models.CharField(max_length=3, unique=True)
-    name = models.CharField(max_length=50)
 
 class Valuation(models.Model):
     asset = models.OneToOneField('Asset', on_delete=models.CASCADE)
