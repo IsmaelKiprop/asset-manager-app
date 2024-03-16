@@ -194,7 +194,18 @@ class Asset(models.Model):
 
 class Analytics(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-    # Add fields for analytics data
+    start_date = models.DateField()
+    end_date = models.DateField()
+    completion_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    milestone_reached = models.BooleanField(default=False)
+    tasks_completed = models.PositiveIntegerField(default=0)
+    total_tasks = models.PositiveIntegerField(default=0)
+    revenue_generated = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    expenses_incurred = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    efficiency_score = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    customer_satisfaction = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    net_profit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Add more fields as needed
 
 
 # Models for Asset Selling and Leasing using Blockchain (to be implemented)
