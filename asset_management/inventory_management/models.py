@@ -54,6 +54,57 @@ class AuthToken(models.Model):
 
 # Models for Inventory Management
 
+# Define industries choices
+INDUSTRIES_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Basic Metal Production', 'Basic Metal Production'),
+    ('Chemical', 'Chemical'),
+    ('Clothing', 'Clothing'),
+    ('Commerce', 'Commerce'),
+    ('Construction', 'Construction'),
+    ('Culture', 'Culture'),
+    ('Education', 'Education'),
+    ('Electricity', 'Electricity'),
+    ('Electronics', 'Electronics'),
+    ('Finance', 'Finance'),
+    ('Food and Drink', 'Food and Drink'),
+    ('Forestry', 'Forestry'),
+    ('Health', 'Health'),
+    ('Logistics', 'Logistics'),
+    ('Tourism', 'Tourism'),
+    ('Marine', 'Marine'),
+    ('Mining', 'Mining'),
+    ('Media', 'Media'),
+    ('Oil and Gas', 'Oil and Gas'),
+    ('Postal and Telecommunications', 'Postal and Telecommunications'),
+    ('Retail Stores', 'Retail Stores'),
+    ('Textiles', 'Textiles'),
+    ('Railways', 'Railways'),
+    ('Road Transport', 'Road Transport'),
+    ('Wholesale Stores', 'Wholesale Stores'),
+    ('Other', 'Other'),
+]
+
+# Define demand categories choices
+DEMAND_CATEGORIES_CHOICES = [
+    ('Highest Demand', 'Highest Demand'),
+    ('High Demand', 'High Demand'),
+    ('Medium Demand', 'Medium Demand'),
+    ('Low Demand', 'Low Demand'),
+    ('Very Low Demand', 'Very Low Demand'),
+]
+
+# Define value categories choices
+VALUE_CATEGORIES_CHOICES = [
+    ('Highest Value', 'Highest Value'),
+    ('High Value', 'High Value'),
+    ('Medium Value', 'Medium Value'),
+    ('Low Value', 'Low Value'),
+    ('Very Low Value', 'Very Low Value'),
+]
+
 class InventoryItem(models.Model):
     category = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
@@ -62,7 +113,36 @@ class InventoryItem(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3)  # Multicurrency support
     photo = models.ImageField(upload_to='inventory_photos/')  # Upload photos
+    industry = models.CharField(max_length=100, choices=INDUSTRIES_CHOICES)
+    demand_category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES)
+    value_category = models.CharField(max_length=100, choices=VALUE_CATEGORIES_CHOICES)
+    stock_notification_threshold = models.PositiveIntegerField(default=0)  # Stock notification threshold
 
+    # Other fields and functionalities can be added as needed
+
+class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    manager = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
+
+    # Other fields and functionalities can be added as needed
+
+class StockReturn(models.Model):
+    inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    return_reason = models.TextField()
+    return_date = models.DateField()
+
+    # Other fields and functionalities can be added as needed
+
+class StockRequest(models.Model):
+    inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    requested_quantity = models.PositiveIntegerField()
+    request_date = models.DateField()
+    requester = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
+
+    # Other fields and functionalities can be added as needed
+
+# Other related models and functionalities can be added similarly
 # Models for Expense Management
 
 class Expense(models.Model):
