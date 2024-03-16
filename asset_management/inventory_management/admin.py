@@ -1,4 +1,10 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
+
+admin.site.register(CustomUser, UserAdmin)  # Register your custom user model with the Django admin
+
+from django.contrib import admin
 from .models import IntangibleAsset, IntangibleAssetCategory, IntangibleAssetIndustry, AssetDocument, ConcernedPeople, ExpiringAsset, TotalAssetValue
 
 @admin.register(IntangibleAssetIndustry)
