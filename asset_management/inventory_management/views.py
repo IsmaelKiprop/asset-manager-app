@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
 from django.contrib.auth import logout
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery
+from .serializers import CustomUserSerializer, InventoryItemSerializer, ExpenseSerializer, IntangibleAssetSerializer, MachinerySerializer
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = CustomUserSerializer
@@ -56,3 +56,130 @@ class UserAPI(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+# Views for Inventory Management
+
+class InventoryItemListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = InventoryItem.objects.all()
+    serializer_class = InventoryItemSerializer
+
+class InventoryItemDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = InventoryItem.objects.all()
+    serializer_class = InventoryItemSerializer
+
+# Views for Expense Management
+
+class ExpenseListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+
+class ExpenseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+
+# Views for Intangible Assets
+
+class IntangibleAssetListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = IntangibleAsset.objects.all()
+    serializer_class = IntangibleAssetSerializer
+
+class IntangibleAssetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = IntangibleAsset.objects.all()
+    serializer_class = IntangibleAssetSerializer
+
+# Views for Machinery and Vehicles
+
+class MachineryListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Machinery.objects.all()
+    serializer_class = MachinerySerializer
+
+class MachineryDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Machinery.objects.all()
+    serializer_class = MachinerySerializer
+
+
+# Views for Hardware and Software
+
+class HardwareSoftwareListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = HardwareSoftware.objects.all()
+    serializer_class = HardwareSoftwareSerializer
+
+class HardwareSoftwareDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = HardwareSoftware.objects.all()
+    serializer_class = HardwareSoftwareSerializer
+
+# Views for Furniture
+
+class FurnitureListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Furniture.objects.all()
+    serializer_class = FurnitureSerializer
+
+class FurnitureDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Furniture.objects.all()
+    serializer_class = FurnitureSerializer
+
+# Views for Investments
+
+class InvestmentListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Investment.objects.all()
+    serializer_class = InvestmentSerializer
+
+class InvestmentDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Investment.objects.all()
+    serializer_class = InvestmentSerializer
+
+# Views for Fixed Assets
+
+class FixedAssetListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = FixedAsset.objects.all()
+    serializer_class = FixedAssetSerializer
+
+class FixedAssetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = FixedAsset.objects.all()
+    serializer_class = FixedAssetSerializer
+
+# Views for Contract Management
+
+class ContractListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Contract.objects.all()
+    serializer_class = ContractSerializer
+
+class ContractDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Contract.objects.all()
+    serializer_class = ContractSerializer
