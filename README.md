@@ -34,7 +34,7 @@ The Asset Management Software is a web application designed to help businesses m
 
 2. Navigate to the backend directory:
    ```bash
-   cd asset_management_backend
+   cd backend
 
 3. Install dependencies:
    ```bash
@@ -52,7 +52,7 @@ The Asset Management Software is a web application designed to help businesses m
 
 7. Navigate to the frontend directory:
    ```bash
-   cd asset_management_frontend
+   cd frontend
 
 8. Install dependencies:
    ```bash
