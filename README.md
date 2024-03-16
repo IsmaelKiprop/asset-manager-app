@@ -38,7 +38,7 @@ To set up the backend and configure the database for the Asset Management Softwa
 
 1. **Navigate to the Backend Directory:**
    ```bash
-   cd asset_management_backend
+   cd backend
 
 2. **Install dependencies:**
    ```bash
@@ -80,7 +80,7 @@ FLUSH PRIVILEGES;
   ```
 6. **Navigate to the frontend directory:**
    ```bash
-   cd asset_management_frontend
+   cd frontend
 
 7. **Install dependencies:**
    ```bash
@@ -92,7 +92,7 @@ FLUSH PRIVILEGES;
 
 9. **Access the application in your web browser at:**
 ```bash
-http://localhost:3000.
+http://localhost:3000
 ```
 
 ## Contributing
