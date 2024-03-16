@@ -32,37 +32,68 @@ The Asset Management Software is a web application designed to help businesses m
    ```bash
    git clone <https://github.com/IsmaelKiprop/asset-manager-app.git>
 
-2. Navigate to the backend directory:
-   ```bash
-   cd backend
+## Setting Up the Backend and Database
 
-3. Install dependencies:
+To set up the backend and configure the database for the Asset Management Software, follow these steps:
+
+1. **Navigate to the Backend Directory:**
+   ```bash
+   cd asset_management_backend
+
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
 
-4. Set up MariaDB and configure the database settings in settings.py.
-
-5. Run migrations:
+3. **Set Up MariaDB:**
+   
+Install MariaDB on your server or local machine. You can download it from MariaDB Downloads.Start the MariaDB server using appropriate commands for your operating system.Access the MariaDB shell using the command:
+```bash
+mysql -u root -p
+```
+- **Create a database for the application**
+```bash
+CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+- **Create a user for the database**
+```bash
+CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
+```
+- **Grant all privileges to the user on the database**
+```bash
+GRANT ALL PRIVILEGES ON asset_management_db.* TO 'assets'@'localhost';
+```
+- **Flush privileges to apply changes**
+```bash
+FLUSH PRIVILEGES;
+```
+4. **Run migrations:**
    ```bash
    python manage.py migrate
 
-6. Start the Django development server:
+5. **Start the Django development server:**
    ```bash
    python manage.py runserver
-
-7. Navigate to the frontend directory:
+   ```
+- **Access your application at:**
+  ```bash
+  http://localhost:8000/api/v1
+  ```
+6. **Navigate to the frontend directory:**
    ```bash
-   cd frontend
+   cd asset_management_frontend
 
-8. Install dependencies:
+7. **Install dependencies:**
    ```bash
    npm install
 
-9. Start the React development server:
+8. **Start the React development server:**
    ```bash
    npm start
 
-10. Access the application in your web browser at http://localhost:3000.
+9. **Access the application in your web browser at:**
+```bash
+http://localhost:3000.
+```
 
 ## Contributing
 
