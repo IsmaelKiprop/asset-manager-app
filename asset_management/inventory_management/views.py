@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+views.pyfrom rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
@@ -183,3 +183,75 @@ class ContractDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication,)
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
+
+class ExpenseListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+
+class ExpenseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+
+class SavingsListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Savings.objects.all()
+    serializer_class = SavingsSerializer
+
+class SavingsDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Savings.objects.all()
+    serializer_class = SavingsSerializer
+
+class BudgetListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+
+class BudgetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+
+class BankIntegrationListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = BankIntegration.objects.all()
+    serializer_class = BankIntegrationSerializer
+
+class BankIntegrationDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = BankIntegration.objects.all()
+    serializer_class = BankIntegrationSerializer
+
+class BillListAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Bill.objects.all()
+    serializer_class = BillSerializer
+
+class BillDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = Bill.objects.all()
+    serializer_class = BillSerializer
+
+class FinancialReportListAPI(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = FinancialReport.objects.all()
+    serializer_class = FinancialReportSerializer
+
+class FinancialReportDetailAPI(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    queryset = FinancialReport.objects.all()
+    serializer_class = FinancialReportSerializer
