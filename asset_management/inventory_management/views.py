@@ -1,10 +1,10 @@
-views.pyfrom rest_framework import generics, permissions
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
 from django.contrib.auth import logout
-from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract
-from .serializers import CustomUserSerializer, InventoryItemSerializer, ExpenseSerializer, IntangibleAssetSerializer, MachinerySerializer, HardwareSoftwareSerializer, FurnitureSerializer, InvestmentSerializer, FixedAssetSerializer, ContractSerializer
+from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialReport
+from .serializers import CustomUserSerializer, InventoryItemSerializer, ExpenseSerializer, IntangibleAssetSerializer, MachinerySerializer, HardwareSoftwareSerializer, FurnitureSerializer, InvestmentSerializer, FixedAssetSerializer, ContractSerializer, SavingsSerializer, BudgetSerializer, BankIntegrationSerializer, BillSerializer, FinancialReportSerializer
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = CustomUserSerializer
@@ -183,6 +183,8 @@ class ContractDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication,)
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
+
+# Views for Financial Management
 
 class ExpenseListAPI(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
