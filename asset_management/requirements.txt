@@ -6,3 +6,4 @@ pytz==2021.1
 sqlparse==0.4.2
 mysql-connector-python==8.0.28
 mysqlclient==2.1.0
+django-rest-knox==4.1.0  # Added for token-based authentication
