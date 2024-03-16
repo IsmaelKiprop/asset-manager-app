@@ -50,43 +50,46 @@ Install MariaDB on your server or local machine. You can download it from MariaD
 ```bash
 mysql -u root -p
 ```
-# Create a database for the application
+- **Create a database for the application**
 ```bash
 CREATE DATABASE asset_management_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-# Create a user for the database
+- **Create a user for the database**
 ```bash
 CREATE USER 'assets'@'localhost' IDENTIFIED BY 'assets';
 ```
-# Grant all privileges to the user on the database
+- **Grant all privileges to the user on the database**
 ```bash
 GRANT ALL PRIVILEGES ON asset_management_db.* TO 'assets'@'localhost';
 ```
-# Flush privileges to apply changes
+- **Flush privileges to apply changes**
 ```bash
 FLUSH PRIVILEGES;
 ```
-4. Run migrations:
+4. **Run migrations:**
    ```bash
    python manage.py migrate
 
-6. Start the Django development server:
+5. **Start the Django development server:**
    ```bash
    python manage.py runserver
 
-7. Navigate to the frontend directory:
+6. **Navigate to the frontend directory:**
    ```bash
    cd asset_management_frontend
 
-8. Install dependencies:
+7. **Install dependencies:**
    ```bash
    npm install
 
-9. Start the React development server:
+8. **Start the React development server:**
    ```bash
    npm start
 
-10. Access the application in your web browser at http://localhost:3000.
+9. **Access the application in your web browser at:**
+```bash
+http://localhost:3000.
+```
 
 ## Contributing
 
