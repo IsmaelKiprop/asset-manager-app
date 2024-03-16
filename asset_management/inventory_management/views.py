@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
+from knox.auth import TokenAuthentication
+from django.contrib.auth import logout
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 
@@ -17,6 +19,7 @@ class RegisterAPI(generics.GenericAPIView):
 
 class LoginAPI(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = (TokenAuthentication,)
     serializer_class = CustomUserSerializer
 
     def post(self, request, *args, **kwargs):
@@ -35,8 +38,20 @@ class LoginAPI(generics.GenericAPIView):
         return Response({'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
                          'token': token})
 
+class LogoutAPI(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        # Invalidate the user's token
+        request.auth.delete()
+        # Logout the user
+        logout(request)
+        return Response({'success': 'Successfully logged out'}, status=200)
+
 class UserAPI(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
     serializer_class = CustomUserSerializer
 
     def get_object(self):
