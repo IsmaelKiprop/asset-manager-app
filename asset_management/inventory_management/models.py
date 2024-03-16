@@ -52,10 +52,6 @@ class AuthToken(models.Model):
     def __str__(self):
         return self.key
 
-# Models for Inventory Management
-
-from django.db import models
-
 # Choices for industries
 INDUSTRY_CHOICES = [
     ('Aerospace', 'Aerospace'),
@@ -119,13 +115,11 @@ class InventoryItem(models.Model):
     demand_category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES, default='Medium Demand')
     value_category = models.CharField(max_length=100, choices=VALUE_CATEGORIES_CHOICES, default='Medium Value')
     stock_notification_threshold = models.PositiveIntegerField(default=0)
-
-barcode = models.CharField(max_length=100, blank=True, null=True)
+    barcode = models.CharField(max_length=100, blank=True, null=True)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     rfid_tag = models.CharField(max_length=100, blank=True, null=True)
     iot_identifier = models.CharField(max_length=100, blank=True, null=True)
-
-warehouse = models.CharField(max_length=100, blank=True, null=True)
+    warehouse = models.CharField(max_length=100, blank=True, null=True)
     place_of_sale = models.CharField(max_length=100, blank=True, null=True)
     is_returnable = models.BooleanField(default=False)
     proceed_to_pay = models.BooleanField(default=True)
@@ -141,12 +135,10 @@ warehouse = models.CharField(max_length=100, blank=True, null=True)
     taxes = models.DecimalField(max_digits=10, decimal_places=2)
     cost_per_item = models.DecimalField(max_digits=10, decimal_places=2)
     stock_value = models.DecimalField(max_digits=10, decimal_places=2)
-    
+
     def get_sales_history(self):
         # Logic to retrieve sales history for this item
         pass
-    
-    # Other fields and functionalities can be added as needed
 
 class Expense(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -217,14 +209,10 @@ class Warehouse(models.Model):
     location = models.CharField(max_length=100)
     manager = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
-    # Other fields and functionalities can be added as needed
-
 class StockReturn(models.Model):
     inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
     return_reason = models.TextField()
     return_date = models.DateField()
-
-    # Other fields and functionalities can be added as needed
 
 class StockRequest(models.Model):
     inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
