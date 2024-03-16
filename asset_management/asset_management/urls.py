@@ -13,9 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# asset_management_backend/asset_management/urls.py
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('inventory_management.urls')),  # Add your app's API endpoints here
+    # Add URLs for other apps' API endpoints if any
 ]
