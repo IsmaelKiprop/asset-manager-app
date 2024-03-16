@@ -140,6 +140,7 @@ class InventoryItem(models.Model):
         # Logic to retrieve sales history for this item
         pass
 
+# Expense model
 class Expense(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -147,6 +148,7 @@ class Expense(models.Model):
     date = models.DateField()
     category = models.CharField(max_length=100, choices=EXPENSE_CATEGORIES_CHOICES)
 
+# Invoice model
 class Invoice(models.Model):
     invoice_number = models.CharField(max_length=100)
     recipient = models.CharField(max_length=100)
@@ -154,6 +156,7 @@ class Invoice(models.Model):
     date = models.DateField()
     description = models.TextField()
 
+# Bank connection model
 class BankConnection(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     bank_name = models.CharField(max_length=100)
@@ -161,26 +164,31 @@ class BankConnection(models.Model):
     routing_number = models.CharField(max_length=100)
     balance = models.DecimalField(max_digits=10, decimal_places=2)
 
+# VAT model
 class VAT(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     vat_number = models.CharField(max_length=100)
     rate = models.DecimalField(max_digits=5, decimal_places=2)
 
+# Report model
 class Report(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     report_type = models.CharField(max_length=100)
     content = models.TextField()
 
+# Employee model
 class Employee(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     contact_details = models.CharField(max_length=100)
 
+# Currency model
 class Currency(models.Model):
     code = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=50)
 
+# Transaction model
 class Transaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -188,38 +196,43 @@ class Transaction(models.Model):
     date = models.DateField()
     recurring = models.BooleanField(default=False)
 
+# Inventory model
 class Inventory(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
 
+# Project model
 class Project(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     budget = models.DecimalField(max_digits=10, decimal_places=2)
 
+# Budget model
 class Budget(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
+# Warehouse model
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     manager = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
+# Stock return model
 class StockReturn(models.Model):
     inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
     return_reason = models.TextField()
     return_date = models.DateField()
 
+# Stock request model
 class StockRequest(models.Model):
     inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
     requested_quantity = models.PositiveIntegerField()
     request_date = models.DateField()
     requester = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
-
 
 # Models for Intangible Assets
 
