@@ -60,6 +60,8 @@ class InventoryItem(models.Model):
     description = models.TextField()
     quantity = models.PositiveIntegerField()
     value = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3)  # Multicurrency support
+    photo = models.ImageField(upload_to='inventory_photos/')  # Upload photos
 
 # Models for Expense Management
 
@@ -107,6 +109,7 @@ class Investment(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
     value = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3)  # Multicurrency support
 
 # Models for Fixed Assets
 
@@ -151,3 +154,13 @@ class FinancialReport(models.Model):
     report_type = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
+
+# Models for Asset Selling and Leasing using Blockchain (to be implemented)
+class AssetTransaction(models.Model):
+    asset = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    seller = models.ForeignKey(CustomUser, related_name='sales', on_delete=models.CASCADE)
+    buyer = models.ForeignKey(CustomUser, related_name='purchases', on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3)
+    date = models.DateTimeField(auto_now_add=True)
+    is_leased = models.BooleanField(default=False)
