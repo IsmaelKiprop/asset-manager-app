@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+import binascii
+import os
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
@@ -49,3 +51,32 @@ class AuthToken(models.Model):
 
     def __str__(self):
         return self.key
+
+# New models for additional features
+
+class InventoryItem(models.Model):
+    category = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    quantity = models.PositiveIntegerField()
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Expense(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+
+class IntangibleAsset(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    expiration_date = models.DateField()
+    document = models.FileField(upload_to='intangible_assets/')
+
+class Machinery(models.Model):
+    name = models.CharField(max_length=100)
+    warranty_information = models.TextField()
+    service_history = models.TextField()
+    location = models.CharField(max_length=100)
+
+# Define other models for remaining features similarly...
