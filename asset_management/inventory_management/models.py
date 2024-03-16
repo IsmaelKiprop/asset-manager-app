@@ -52,7 +52,7 @@ class AuthToken(models.Model):
     def __str__(self):
         return self.key
 
-# Models for additional features
+# Models for Inventory Management
 
 class InventoryItem(models.Model):
     category = models.CharField(max_length=100)
@@ -61,11 +61,15 @@ class InventoryItem(models.Model):
     quantity = models.PositiveIntegerField()
     value = models.DecimalField(max_digits=10, decimal_places=2)
 
+# Models for Expense Management
+
 class Expense(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     date = models.DateField()
+
+# Models for Intangible Assets
 
 class IntangibleAsset(models.Model):
     name = models.CharField(max_length=100)
@@ -73,11 +77,15 @@ class IntangibleAsset(models.Model):
     expiration_date = models.DateField()
     document = models.FileField(upload_to='intangible_assets/')
 
+# Models for Machinery and Vehicles
+
 class Machinery(models.Model):
     name = models.CharField(max_length=100)
     warranty_information = models.TextField()
     service_history = models.TextField()
     location = models.CharField(max_length=100)
+
+# Models for Hardware and Software
 
 class HardwareSoftware(models.Model):
     name = models.CharField(max_length=100)
@@ -85,16 +93,22 @@ class HardwareSoftware(models.Model):
     warranty_information = models.TextField()
     repair_history = models.TextField()
 
+# Models for Furniture
+
 class Furniture(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
     warranty_information = models.TextField()
     repair_history = models.TextField()
 
+# Models for Investments
+
 class Investment(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
     value = models.DecimalField(max_digits=10, decimal_places=2)
+
+# Models for Fixed Assets
 
 class FixedAsset(models.Model):
     name = models.CharField(max_length=100)
@@ -103,7 +117,37 @@ class FixedAsset(models.Model):
     service_history = models.TextField()
     location = models.CharField(max_length=100)
 
+# Models for Contract Management
+
 class Contract(models.Model):
     category = models.CharField(max_length=100)
     expiration_date = models.DateField()
     document = models.FileField(upload_to='contracts/')
+
+# Models for Finance Management
+
+class Savings(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+
+class Budget(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+class Bill(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+    paid = models.BooleanField(default=False)
+    description = models.TextField()
+
+class FinancialReport(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    report_type = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
