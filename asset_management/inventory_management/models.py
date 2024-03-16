@@ -54,8 +54,10 @@ class AuthToken(models.Model):
 
 # Models for Inventory Management
 
-# Define industries choices
-INDUSTRIES_CHOICES = [
+from django.db import models
+
+# Choices for industries
+INDUSTRY_CHOICES = [
     ('Aerospace', 'Aerospace'),
     ('Agriculture', 'Agriculture'),
     ('Automotive', 'Automotive'),
@@ -87,18 +89,18 @@ INDUSTRIES_CHOICES = [
     ('Other', 'Other'),
 ]
 
-# Define demand categories choices
+# Choices for demand categories
 DEMAND_CATEGORIES_CHOICES = [
-    ('Highest Demand', 'Highest Demand'),
-    ('High Demand', 'High Demand'),
-    ('Medium Demand', 'Medium Demand'),
-    ('Low Demand', 'Low Demand'),
-    ('Very Low Demand', 'Very Low Demand'),
+    ('Highest demand', 'Highest demand (90%-100%)'),
+    ('High Demand', 'High Demand (70%-89%)'),
+    ('Medium Demand', 'Medium Demand (50%-69%)'),
+    ('Low Demand', 'Low Demand (40%-49%)'),
+    ('Very Low', 'Very Low (39% and Below)'),
 ]
 
-# Define value categories choices
+# Choices for value categories
 VALUE_CATEGORIES_CHOICES = [
-    ('Highest Value', 'Highest Value'),
+    ('Highest value', 'Highest value'),
     ('High Value', 'High Value'),
     ('Medium Value', 'Medium Value'),
     ('Low Value', 'Low Value'),
@@ -112,13 +114,103 @@ class InventoryItem(models.Model):
     quantity = models.PositiveIntegerField()
     value = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3)  # Multicurrency support
-    photo = models.ImageField(upload_to='inventory_photos/')  # Upload photos
-    industry = models.CharField(max_length=100, choices=INDUSTRIES_CHOICES)
-    demand_category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES)
-    value_category = models.CharField(max_length=100, choices=VALUE_CATEGORIES_CHOICES)
-    stock_notification_threshold = models.PositiveIntegerField(default=0)  # Stock notification threshold
+    photo = models.ImageField(upload_to='inventory_photos/')
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    demand_category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES, default='Medium Demand')
+    value_category = models.CharField(max_length=100, choices=VALUE_CATEGORIES_CHOICES, default='Medium Value')
+    stock_notification_threshold = models.PositiveIntegerField(default=0)
 
+barcode = models.CharField(max_length=100, blank=True, null=True)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
+    rfid_tag = models.CharField(max_length=100, blank=True, null=True)
+    iot_identifier = models.CharField(max_length=100, blank=True, null=True)
+
+warehouse = models.CharField(max_length=100, blank=True, null=True)
+    place_of_sale = models.CharField(max_length=100, blank=True, null=True)
+    is_returnable = models.BooleanField(default=False)
+    proceed_to_pay = models.BooleanField(default=True)
+    is_self_service = models.BooleanField(default=True)
+    automated_purchasing = models.BooleanField(default=False)
+    just_in_time_management = models.BooleanField(default=False)
+    real_time_stock_tracking = models.BooleanField(default=True)
+    lost_stolen_damaged = models.BooleanField(default=True)
+    demand_record = models.PositiveIntegerField(default=0)
+    people_requested = models.PositiveIntegerField(default=0)
+    invoices = models.FileField(upload_to='invoices/', blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    taxes = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_per_item = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_value = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def get_sales_history(self):
+        # Logic to retrieve sales history for this item
+        pass
+    
     # Other fields and functionalities can be added as needed
+
+class Expense(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+    category = models.CharField(max_length=100, choices=EXPENSE_CATEGORIES_CHOICES)
+
+class Invoice(models.Model):
+    invoice_number = models.CharField(max_length=100)
+    recipient = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    description = models.TextField()
+
+class BankConnection(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=100)
+    routing_number = models.CharField(max_length=100)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
+
+class VAT(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    vat_number = models.CharField(max_length=100)
+    rate = models.DecimalField(max_digits=5, decimal_places=2)
+
+class Report(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    report_type = models.CharField(max_length=100)
+    content = models.TextField()
+
+class Employee(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3, unique=True)
+    name = models.CharField(max_length=50)
+
+class Transaction(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+    recurring = models.BooleanField(default=False)
+
+class Inventory(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+class Project(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    budget = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Budget(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
