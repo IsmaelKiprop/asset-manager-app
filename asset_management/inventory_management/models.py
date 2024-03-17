@@ -540,6 +540,109 @@ SORT_OPTIONS = {
     'date_manufactured_desc': _('Date of Manufacture (Descending)'),
 }
 
+# Models for vehicle
+
+User = get_user_model()
+
+# Choices for industries including "Other" option
+INDUSTRY_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Other', 'Other'),
+]
+
+# Choices for vehicle categories
+# Customize categories of vehicles
+VEHICLE_CATEGORY_CHOICES = [
+    ('Sedan', 'Sedan'),
+    ('SUV', 'SUV'),
+    ('Truck', 'Truck'),
+    ('Van', 'Van'),
+    # Add more categories as needed
+]
+
+# Choices for vehicle value categories
+VALUE_CATEGORIES_CHOICES = [
+    ('Highest value', 'Highest value'),
+    ('High Value', 'High Value'),
+    ('Medium Value', 'Medium Value'),
+    ('Low Value', 'Low Value'),
+    ('Very Low Value', 'Very Low Value'),
+]
+
+class Vehicle(models.Model):
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100, choices=VEHICLE_CATEGORY_CHOICES)
+    date_registered = models.DateField()
+    date_manufactured = models.DateField()
+    location = models.CharField(max_length=100)
+    malfunction_date = models.DateField(blank=True, null=True)
+    accident_records = models.TextField(blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    documentation = models.FileField(upload_to='vehicle_documents/')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class VehicleDocument(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='vehicle_documents/')
+    description = models.TextField()
+
+class ConcernedPeople(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class PurchaseRecord(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    purchase_date = models.DateField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    seller = models.CharField(max_length=100)
+    receipt = models.FileField(upload_to='purchase_records/')
+
+class WarrantyRecord(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    provider = models.CharField(max_length=100)
+    terms_conditions = models.TextField()
+
+class RepairRecord(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    repair_date = models.DateField()
+    details = models.TextField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    technician = models.CharField(max_length=100)
+    receipt = models.FileField(upload_to='repair_records/')
+
+# Sorting options with verbose names
+SORT_OPTIONS = {
+    'category': _('Category'),
+    'date_created_asc': _('Date Created (Ascending)'),
+    'date_created_desc': _('Date Created (Descending)'),
+    'date_modified_asc': _('Date Modified (Ascending)'),
+    'date_modified_desc': _('Date Modified (Descending)'),
+    'expiry_date_warranty_asc': _('Expiry Date of Warranty (Ascending)'),
+    'expiry_date_warranty_desc': _('Expiry Date of Warranty (Descending)'),
+    'service_date_asc': _('Service Date (Ascending)'),
+    'service_date_desc': _('Service Date (Descending)'),
+    'repair_dates_asc': _('Repair Dates (Ascending)'),
+    'repair_dates_desc': _('Repair Dates (Descending)'),
+    'date_manufactured_asc': _('Date of Manufacture (Ascending)'),
+    'date_manufactured_desc': _('Date of Manufacture (Descending)'),
+}
 
 # Models for Machinery 
 User = get_user_model()
