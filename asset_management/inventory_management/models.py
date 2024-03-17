@@ -457,11 +457,6 @@ SORT_OPTIONS = {
     'expiring_date_asc': _('Expiring Date (Ascending)'),
     'expiring_date_desc': _('Expiring Date (Descending)'),
 }
-class Machinery(models.Model):
-    name = models.CharField(max_length=100)
-    warranty_information = models.TextField()
-    service_history = models.TextField()
-    location = models.CharField(max_length=100)
 
 # Models for Computer Hardware
 
@@ -610,7 +605,24 @@ class Warehouse(models.Model):
     location = models.CharField(max_length=100)
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
 
-# Other models such as warranty records, repair records, purchase records, etc. can be added similarly
+class WarrantyRecord(models.Model):
+    machinery = models.ForeignKey(Machinery, on_delete=models.CASCADE)
+    warranty_used = models.BooleanField(default=False)
+    broken_details = models.TextField(blank=True, null=True)
+    broken_date = models.DateField(blank=True, null=True)
+    service_date = models.DateField(blank=True, null=True)
+    repair_details = models.TextField(blank=True, null=True)
+    repair_date = models.DateField(blank=True, null=True)
+
+class PurchaseRecord(models.Model):
+    machinery = models.ForeignKey(Machinery, on_delete=models.CASCADE)
+    receipt = models.FileField(upload_to='purchase_records/')
+    other_documentation = models.FileField(upload_to='purchase_records/', blank=True, null=True)
+
+class RepairRecord(models.Model):
+    machinery = models.ForeignKey(Machinery, on_delete=models.CASCADE)
+    repair_details = models.TextField()
+    repair_date = models.DateField()
 
 # Sorting options with verbose names
 SORT_OPTIONS = {
