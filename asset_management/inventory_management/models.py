@@ -399,47 +399,6 @@ class TotalAssetValue(models.Model):
 
 # Add, Edit, and Delete functionalities are handled through Django admin panel
 
-# Asset Document model
-class AssetDocument(models.Model):
-    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
-    document = models.FileField(upload_to='asset_documents/')
-    description = models.TextField()
-
-# Model for people concerned
-class ConcernedPeople(models.Model):
-    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    title = models.CharField(max_length=100)
-    contact_details = models.CharField(max_length=100)
-
-# Sorting options
-SORT_OPTIONS = [
-    ('category', 'Category'),
-    ('date_created_asc', 'Date Created (Ascending)'),
-    ('date_created_desc', 'Date Created (Descending)'),
-    ('date_modified_asc', 'Date Modified (Ascending)'),
-    ('date_modified_desc', 'Date Modified (Descending)'),
-    ('expiring_date_asc', 'Expiring Date (Ascending)'),
-    ('expiring_date_desc', 'Expiring Date (Descending)'),
-]
-
-# Notification for expiring assets
-class ExpiringAsset(models.Model):
-    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
-    notification_date = models.DateField()
-    notified = models.BooleanField(default=False)
-
-# Total Value of all assets (computed property)
-class TotalAssetValue(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    total_value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-
-    def calculate_total_value(self):
-        total = IntangibleAsset.objects.filter(owner=self.user).aggregate(Sum('value'))['value__sum']
-        self.total_value = total if total else 0
-        self.save()
-
-# Add, Edit, and Delete functionalities are handled through Django admin panel
 
 # Models for Computer Software
 
