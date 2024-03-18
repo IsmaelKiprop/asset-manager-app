@@ -1,246 +1,521 @@
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-from knox.models import AuthToken
-from knox.auth import TokenAuthentication
-from django.contrib.auth import logout
-from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialReport
-from .serializers import CustomUserSerializer, InventoryItemSerializer, ExpenseSerializer, IntangibleAssetSerializer, MachinerySerializer, HardwareSoftwareSerializer, FurnitureSerializer, InvestmentSerializer, FixedAssetSerializer, ContractSerializer, SavingsSerializer, BudgetSerializer, BankIntegrationSerializer, BillSerializer, FinancialReportSerializer
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils.translation import gettext_lazy as _
+import binascii
+import os
 
-class RegisterAPI(generics.GenericAPIView):
-    serializer_class = CustomUserSerializer
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, username, password=None):
+        if not email:
+            raise ValueError('Users must have an email address')
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        _, token = AuthToken.objects.create(user)
-        return Response({'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
-                         'token': token})
+        email = self.normalize_email(email)
+        user = self.model(email=email, username=username)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-class LoginAPI(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-    authentication_classes = (TokenAuthentication,)
-    serializer_class = CustomUserSerializer
+    def create_superuser(self, email, username, password):
+        user = self.create_user(email=email, username=username, password=password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=30, unique=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-        user = CustomUser.objects.filter(email=email).first()
+    objects = CustomUserManager()
 
-        if user is None:
-            return Response({'error': 'Invalid credentials'}, status=400)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
-        if not user.check_password(password):
-            return Response({'error': 'Invalid credentials'}, status=400)
+    def __str__(self):
+        return self.email
 
-        _, token = AuthToken.objects.create(user)
-        return Response({'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
-                         'token': token})
+class AuthToken(models.Model):
+    key = models.CharField(max_length=40, primary_key=True)
+    user = models.ForeignKey(CustomUser, related_name='auth_tokens', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
 
-class LogoutAPI(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super(AuthToken, self).save(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        # Invalidate the user's token
-        request.auth.delete()
-        # Logout the user
-        logout(request)
-        return Response({'success': 'Successfully logged out'}, status=200)
+    def generate_key(self):
+        return binascii.hexlify(os.urandom(20)).decode()
 
-class UserAPI(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    serializer_class = CustomUserSerializer
+    def __str__(self):
+        return self.key
 
-    def get_object(self):
-        return self.request.user
+# Choices for industries
+INDUSTRY_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Basic Metal Production', 'Basic Metal Production'),
+    ('Chemical', 'Chemical'),
+    ('Clothing', 'Clothing'),
+    ('Commerce', 'Commerce'),
+    ('Construction', 'Construction'),
+    ('Culture', 'Culture'),
+    ('Education', 'Education'),
+    ('Electricity', 'Electricity'),
+    ('Electronics', 'Electronics'),
+    ('Finance', 'Finance'),
+    ('Food and Drink', 'Food and Drink'),
+    ('Forestry', 'Forestry'),
+    ('Health', 'Health'),
+    ('Logistics', 'Logistics'),
+    ('Tourism', 'Tourism'),
+    ('Marine', 'Marine'),
+    ('Mining', 'Mining'),
+    ('Media', 'Media'),
+    ('Oil and Gas', 'Oil and Gas'),
+    ('Postal and Telecommunications', 'Postal and Telecommunications'),
+    ('Retail Stores', 'Retail Stores'),
+    ('Textiles', 'Textiles'),
+    ('Railways', 'Railways'),
+    ('Road Transport', 'Road Transport'),
+    ('Wholesale Stores', 'Wholesale Stores'),
+    ('Other', 'Other'),
+]
 
-# Views for Inventory Management
+# Choices for demand categories
+DEMAND_CATEGORIES_CHOICES = [
+    ('Highest demand', 'Highest demand (90%-100%)'),
+    ('High Demand', 'High Demand (70%-89%)'),
+    ('Medium Demand', 'Medium Demand (50%-69%)'),
+    ('Low Demand', 'Low Demand (40%-49%)'),
+    ('Very Low', 'Very Low (39% and Below)'),
+]
 
-class InventoryItemListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = InventoryItem.objects.all()
-    serializer_class = InventoryItemSerializer
+# Choices for value categories
+VALUE_CATEGORIES_CHOICES = [
+    ('Highest value', 'Highest value'),
+    ('High Value', 'High Value'),
+    ('Medium Value', 'Medium Value'),
+    ('Low Value', 'Low Value'),
+    ('Very Low Value', 'Very Low Value'),
+]
 
-class InventoryItemDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = InventoryItem.objects.all()
-    serializer_class = InventoryItemSerializer
+class InventoryItem(models.Model):
+    category = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    quantity = models.PositiveIntegerField()
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3)  # Multicurrency support
+    photo = models.ImageField(upload_to='inventory_photos/')
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    demand_category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES, default='Medium Demand')
+    value_category = models.CharField(max_length=100, choices=VALUE_CATEGORIES_CHOICES, default='Medium Value')
+    stock_notification_threshold = models.PositiveIntegerField(default=0)
+    barcode = models.CharField(max_length=100, blank=True, null=True)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
+    rfid_tag = models.CharField(max_length=100, blank=True, null=True)
+    iot_identifier = models.CharField(max_length=100, blank=True, null=True)
+    warehouse = models.CharField(max_length=100, blank=True, null=True)
+    place_of_sale = models.CharField(max_length=100, blank=True, null=True)
+    is_returnable = models.BooleanField(default=False)
+    proceed_to_pay = models.BooleanField(default=True)
+    is_self_service = models.BooleanField(default=True)
+    automated_purchasing = models.BooleanField(default=False)
+    just_in_time_management = models.BooleanField(default=False)
+    real_time_stock_tracking = models.BooleanField(default=True)
+    lost_stolen_damaged = models.BooleanField(default=True)
+    demand_record = models.PositiveIntegerField(default=0)
+    people_requested = models.PositiveIntegerField(default=0)
+    invoices = models.FileField(upload_to='invoices/', blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    taxes = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_per_item = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_value = models.DecimalField(max_digits=10, decimal_places=2)
 
-# Views for Expense Management
+    def get_sales_history(self):
+        # Logic to retrieve sales history for this item
+        pass
 
-class ExpenseListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
+# Expense model
+class Expense(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+    category = models.CharField(max_length=100, choices=EXPENSE_CATEGORIES_CHOICES)
 
-class ExpenseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
+# Invoice model
+class Invoice(models.Model):
+    invoice_number = models.CharField(max_length=100)
+    recipient = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    description = models.TextField()
 
-# Views for Intangible Assets
+# Bank connection model
+class BankConnection(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=100)
+    routing_number = models.CharField(max_length=100)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
 
-class IntangibleAssetListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = IntangibleAsset.objects.all()
-    serializer_class = IntangibleAssetSerializer
+# VAT model
+class VAT(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    vat_number = models.CharField(max_length=100)
+    rate = models.DecimalField(max_digits=5, decimal_places=2)
 
-class IntangibleAssetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = IntangibleAsset.objects.all()
-    serializer_class = IntangibleAssetSerializer
+# Report model
+class Report(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    report_type = models.CharField(max_length=100)
+    content = models.TextField()
 
-# Views for Machinery and Vehicles
+# Employee model
+class Employee(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
 
-class MachineryListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Machinery.objects.all()
-    serializer_class = MachinerySerializer
+# Currency model
+class Currency(models.Model):
+    code = models.CharField(max_length=3, unique=True)
+    name = models.CharField(max_length=50)
 
-class MachineryDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Machinery.objects.all()
-    serializer_class = MachinerySerializer
+# Transaction model
+class Transaction(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    date = models.DateField()
+    recurring = models.BooleanField(default=False)
 
-# Views for Hardware and Software
+# Inventory model
+class Inventory(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
 
-class HardwareSoftwareListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = HardwareSoftware.objects.all()
-    serializer_class = HardwareSoftwareSerializer
+# Project model
+class Project(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    budget = models.DecimalField(max_digits=10, decimal_places=2)
 
-class HardwareSoftwareDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = HardwareSoftware.objects.all()
-    serializer_class = HardwareSoftwareSerializer
+# Warehouse model
+class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    manager = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
-# Views for Furniture
+# Stock return model
+class StockReturn(models.Model):
+    inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    return_reason = models.TextField()
+    return_date = models.DateField()
 
-class FurnitureListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Furniture.objects.all()
-    serializer_class = FurnitureSerializer
+# Stock request model
+class StockRequest(models.Model):
+    inventory_item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+    requested_quantity = models.PositiveIntegerField()
+    request_date = models.DateField()
+    requester = models.ForeignKey('CustomUser', on_delete=models.CASCADE)  # Assuming CustomUser model exists
 
-class FurnitureDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Furniture.objects.all()
-    serializer_class = FurnitureSerializer
 
-# Views for Investments
+# Models for Finance Management
 
-class InvestmentListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Investment.objects.all()
-    serializer_class = InvestmentSerializer
+# Savings model
+class Savings(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    goal_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    target_date = models.DateField()
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2)
 
-class InvestmentDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Investment.objects.all()
-    serializer_class = InvestmentSerializer
+# Budget model
+class Budget(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100)
+    budget_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    actual_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
 
-# Views for Fixed Assets
+# Bank integration model
+class BankIntegration(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=100)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
 
-class FixedAssetListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = FixedAsset.objects.all()
-    serializer_class = FixedAssetSerializer
+# Bill manager model
+class Bill(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
 
-class FixedAssetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = FixedAsset.objects.all()
-    serializer_class = FixedAssetSerializer
+# Analytics model
+class Analytics(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    cash_flow = models.DecimalField(max_digits=10, decimal_places=2)
+    budgeting = models.DecimalField(max_digits=10, decimal_places=2)
+    net_worth = models.DecimalField(max_digits=10, decimal_places=2)
+    transactions = models.DecimalField(max_digits=10, decimal_places=2)
 
-# Views for Contract Management
+# Assets valuation model
+class AssetsValuation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    asset_name = models.CharField(max_length=100)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
 
-class ContractListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Contract.objects.all()
-    serializer_class = ContractSerializer
+# Credit score tracking model
+class CreditScore(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    score = models.PositiveIntegerField()
+    date = models.DateField()
 
-class ContractDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Contract.objects.all()
-    serializer_class = ContractSerializer
+# Customizable alerts model
+class CustomizableAlert(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    alert_type = models.CharField(max_length=100)
+    message = models.TextField()
+    date = models.DateField()
 
-# Views for Financial Management
+# Financial growth tracking model
+class FinancialGrowth(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    growth_type = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
 
-class SavingsListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Savings.objects.all()
-    serializer_class = SavingsSerializer
+# Checking account model
+class CheckingAccount(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    account_number = models.CharField(max_length=100)
+    digital_check = models.BooleanField(default=True)
 
-class SavingsDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Savings.objects.all()
-    serializer_class = SavingsSerializer
+# Insurance model
+class Insurance(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=100)
+    premium_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    coverage_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
-class BudgetListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Budget.objects.all()
-    serializer_class = BudgetSerializer
+# Investing model
+class Investing(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    goal_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    target_date = models.DateField()
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2)
 
-class BudgetDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Budget.objects.all()
-    serializer_class = BudgetSerializer
+# Integration with accounting software model
+class AccountingSoftwareIntegration(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    software_name = models.CharField(max_length=100)
+    integration_type = models.CharField(max_length=100)
 
-class BankIntegrationListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = BankIntegration.objects.all()
-    serializer_class = BankIntegrationSerializer
+# Intangible Asset model
+# Models for Intangible Assets Management
 
-class BankIntegrationDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = BankIntegration.objects.all()
-    serializer_class = BankIntegrationSerializer
+# Intangible Asset Industry model
+class IntangibleAssetIndustry(models.Model):
+    name = models.CharField(max_length=100, unique=True)
 
-class BillListAPI(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Bill.objects.all()
-    serializer_class = BillSerializer
+    def __str__(self):
+        return self.name
 
-class BillDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = Bill.objects.all()
-    serializer_class = BillSerializer
+# Intangible Asset Category model
+class IntangibleAssetCategory(models.Model):
+    name = models.CharField(max_length=100)
+    industry = models.ForeignKey(IntangibleAssetIndustry, on_delete=models.CASCADE)
 
-class FinancialReportListAPI(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = FinancialReport.objects.all()
-    serializer_class = FinancialReportSerializer
+    def __str__(self):
+        return self.name
 
-class FinancialReportDetailAPI(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
-    queryset = FinancialReport.objects.all()
-    serializer_class = FinancialReportSerializer
+# Intangible Asset model
+class IntangibleAsset(models.Model):
+    category = models.ForeignKey(IntangibleAssetCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    date_registered = models.DateField()
+    expiring_date = models.DateField(null=True, blank=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-date_created', 'name']
+
+# Asset Document model
+class AssetDocument(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='asset_documents/')
+    description = models.TextField()
+
+# Model for people concerned
+class ConcernedPeople(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+# Sorting options
+SORT_OPTIONS = [
+    ('category', 'Category'),
+    ('date_created_asc', 'Date Created (Ascending)'),
+    ('date_created_desc', 'Date Created (Descending)'),
+    ('date_modified_asc', 'Date Modified (Ascending)'),
+    ('date_modified_desc', 'Date Modified (Descending)'),
+    ('expiring_date_asc', 'Expiring Date (Ascending)'),
+    ('expiring_date_desc', 'Expiring Date (Descending)'),
+]
+
+# Notification for expiring assets
+class ExpiringAsset(models.Model):
+    asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
+    notification_date = models.DateField()
+    notified = models.BooleanField(default=False)
+
+# Total Value of all assets (computed property)
+class TotalAssetValue(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    total_value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+
+    def calculate_total_value(self):
+        total = IntangibleAsset.objects.filter(owner=self.user).aggregate(Sum('value'))['value__sum']
+        self.total_value = total if total else 0
+        self.save()
+
+# Add, Edit, and Delete functionalities are handled through Django admin panel
+
+
+# Models for Computer Software
+
+User = get_user_model()
+
+# Choices for industries including "Other" option
+INDUSTRY_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Other', 'Other'),
+]
+
+# Choices for software categories
+# Customize categories of software
+SOFTWARE_CATEGORY_CHOICES = [
+    ('Category1', 'Category 1'),
+    ('Category2', 'Category 2'),
+    # Add more categories as needed
+]
+
+class ComputerSoftware(models.Model):
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    category = models.CharField(max_length=100, choices=SOFTWARE_CATEGORY_CHOICES)
+    name = models.CharField(max_length=100)
+    date_registered = models.DateField()
+    expiring_date = models.DateField(blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    documentation = models.FileField(upload_to='software_documents/')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class SoftwareDocument(models.Model):
+    software = models.ForeignKey(ComputerSoftware, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='software_documents/')
+    description = models.TextField()
+
+class ConcernedPeople(models.Model):
+    software = models.ForeignKey(ComputerSoftware, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+# Sorting options with verbose names
+SORT_OPTIONS = {
+    'category': _('Category'),
+    'date_created_asc': _('Date Created (Ascending)'),
+    'date_created_desc': _('Date Created (Descending)'),
+    'date_modified_asc': _('Date Modified (Ascending)'),
+    'date_modified_desc': _('Date Modified (Descending)'),
+    'expiring_date_asc': _('Expiring Date (Ascending)'),
+    'expiring_date_desc': _('Expiring Date (Descending)'),
+}
+
+# Models for Computer Hardware
+
+User = get_user_model()
+
+# Choices for industries including "Other" option
+INDUSTRY_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Other', 'Other'),
+]
+
+# Choices for hardware categories
+# Customize categories of hardware
+HARDWARE_CATEGORY_CHOICES = [
+    ('Category1', 'Category 1'),
+    ('Category2', 'Category 2'),
+    # Add more categories as needed
+]
+
+# Choices for hardware value categories
+VALUE_CATEGORIES_CHOICES = [
+    ('Highest value', 'Highest value'),
+    ('High Value', 'High Value'),
+    ('Medium Value', 'Medium Value'),
+    ('Low Value', 'Low Value'),
+    ('Very Low Value', 'Very Low Value'),
+]
+
+class ComputerHardware(models.Model):
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    name = models.CharField(max_length=100)
+    date_registered = models.DateField()
+    date_manufactured = models.DateField()
+    expiry_date_warranty = models.DateField()
+    warranty_length = models.PositiveIntegerField(help_text="Length of warranty in years")
+    location = models.CharField(max_length=100)
+    malfunction = models.BooleanField(default=False)
+    malfunction_details = models.TextField(blank=True, null=True)
+    malfunction_date = models.DateField(blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    documentation = models.FileField(upload_to='hardware_documents/')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class HardwareDocument(models.Model):
+    hardware = models.ForeignKey(ComputerHardware, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='hardware_documents/')
+    description = models.TextField()
+
+class ConcernedPeople(models.Model):
+    hardware = models.ForeignKey(ComputerHardware, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+class Warehouse(models.Model):
