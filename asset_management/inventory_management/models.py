@@ -147,7 +147,7 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     date = models.DateField()
-    category = models.CharField(max_length=100, choices=EXPENSE_CATEGORIES_CHOICES)
+    category = models.CharField(max_length=100, choices=DEMAND_CATEGORIES_CHOICES)
 
 # Invoice model
 class Invoice(models.Model):
@@ -403,7 +403,7 @@ class TotalAssetValue(models.Model):
 
 # Models for Computer Software
 
-User = get_user_model()
+#User = CustomUserManager.create_user()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -429,7 +429,7 @@ class ComputerSoftware(models.Model):
     expiring_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='software_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -460,7 +460,7 @@ SORT_OPTIONS = {
 
 # Models for Computer Hardware
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -500,7 +500,7 @@ class ComputerHardware(models.Model):
     malfunction_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='hardware_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -521,7 +521,7 @@ class ConcernedPeople(models.Model):
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 # Sorting options with verbose names
 SORT_OPTIONS = {
@@ -542,7 +542,7 @@ SORT_OPTIONS = {
 
 # Machinery Model
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -582,7 +582,7 @@ class Machinery(models.Model):
     malfunction_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='machinery_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -603,7 +603,7 @@ class ConcernedPeople(models.Model):
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 class WarrantyRecord(models.Model):
     machinery = models.ForeignKey(Machinery, on_delete=models.CASCADE)
@@ -643,7 +643,7 @@ SORT_OPTIONS = {
 
 #Investment Model 
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -690,7 +690,7 @@ class Investment(models.Model):
     location = models.CharField(max_length=100)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='investment_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -719,7 +719,7 @@ SORT_OPTIONS = {
 
 #Furniture Model
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -759,7 +759,7 @@ class Furniture(models.Model):
     malfunction_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='furniture_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -780,7 +780,7 @@ class ConcernedPeople(models.Model):
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 class WarrantyRecord(models.Model):
     furniture = models.ForeignKey(Furniture, on_delete=models.CASCADE)
@@ -848,7 +848,7 @@ class Investment(models.Model):
     malfunction_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='investment_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -878,47 +878,47 @@ class InvestmentPurchaseRecord(models.Model):
     other_documentation = models.FileField(upload_to='investment_purchase_records/')
 
 class WarrantyRecord(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     warranty_provider = models.CharField(max_length=100)
     warranty_details = models.TextField()
 
 class RepairRecord(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     repair_date = models.DateField()
     repair_details = models.TextField()
 
 class ServiceRecord(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     service_date = models.DateField()
     service_details = models.TextField()
 
 class PurchaseRecord(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     purchase_date = models.DateField()
     purchase_details = models.TextField()
 
 class BarcodeScanner(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     barcode_image = models.ImageField(upload_to='barcode_scanner_images/')
 
 class QRCodeScanner(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     qr_code_image = models.ImageField(upload_to='qr_code_scanner_images/')
 
 class RFIDTag(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     tag_code = models.CharField(max_length=100)
 
 class IOTDevice(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    #asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     device_id = models.CharField(max_length=100)
 
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 #Fixed Assets Model
 
@@ -935,7 +935,7 @@ class FixedAsset(models.Model):
     malfunction_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='fixed_assets_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -976,11 +976,11 @@ class IOTDevice(models.Model):
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 #Contract Management Model
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -1006,7 +1006,7 @@ class Contract(models.Model):
     expiry_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='contract_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -1037,7 +1037,7 @@ SORT_OPTIONS = {
 
 #Vehicle Model 
 
-User = get_user_model()
+#User = get_user_model()
 
 # Choices for industries including "Other" option
 INDUSTRY_CHOICES = [
@@ -1077,7 +1077,7 @@ class Vehicle(models.Model):
     accident_records = models.TextField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     documentation = models.FileField(upload_to='vehicle_documents/')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -1098,7 +1098,7 @@ class ConcernedPeople(models.Model):
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    manager = models.ForeignKey(CustomUser, on_delete=models.CASCADE) #changes
 
 class PurchaseRecord(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)

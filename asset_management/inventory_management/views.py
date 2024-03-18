@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
 from django.contrib.auth import logout
-from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialReport
+from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, ComputerHardware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialGrowth
 from .serializers import CustomUserSerializer, InventoryItemSerializer, ExpenseSerializer, IntangibleAssetSerializer, MachinerySerializer, HardwareSoftwareSerializer, FurnitureSerializer, InvestmentSerializer, FixedAssetSerializer, ContractSerializer, SavingsSerializer, BudgetSerializer, BankIntegrationSerializer, BillSerializer, FinancialReportSerializer
 
 class RegisterAPI(generics.GenericAPIView):
@@ -121,13 +121,13 @@ class MachineryDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 class HardwareSoftwareListAPI(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
-    queryset = HardwareSoftware.objects.all()
+    queryset = ComputerHardware.objects.all()
     serializer_class = HardwareSoftwareSerializer
 
 class HardwareSoftwareDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
-    queryset = HardwareSoftware.objects.all()
+    queryset = ComputerHardware.objects.all()
     serializer_class = HardwareSoftwareSerializer
 
 # Views for Furniture
@@ -251,11 +251,11 @@ class BillDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 class FinancialReportListAPI(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
-    queryset = FinancialReport.objects.all()
+    queryset = FinancialGrowth.objects.all()
     serializer_class = FinancialReportSerializer
 
 class FinancialReportDetailAPI(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
-    queryset = FinancialReport.objects.all()
+    queryset = FinancialGrowth.objects.all()
     serializer_class = FinancialReportSerializer
