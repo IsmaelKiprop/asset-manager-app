@@ -919,3 +919,120 @@ class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+#Fixed Assets Model
+
+class FixedAsset(models.Model):
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    name = models.CharField(max_length=100)
+    date_registered = models.DateField()
+    date_manufactured = models.DateField()
+    expiry_date_warranty = models.DateField()
+    warranty_length = models.PositiveIntegerField(help_text="Length of warranty in years")
+    location = models.CharField(max_length=100)
+    malfunction = models.BooleanField(default=False)
+    malfunction_details = models.TextField(blank=True, null=True)
+    malfunction_date = models.DateField(blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    documentation = models.FileField(upload_to='fixed_assets_documents/')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class FixedAssetDocument(models.Model):
+    fixed_asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='fixed_assets_documents/')
+    description = models.TextField()
+
+class FixedAssetConcernedPeople(models.Model):
+    fixed_asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+class LeaseRecord(models.Model):
+    fixed_asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    lease_expiry_date = models.DateField()
+
+class BarcodeScanner(models.Model):
+    asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    barcode_image = models.ImageField(upload_to='barcode_scanner_images/')
+
+class QRCodeScanner(models.Model):
+    asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    qr_code_image = models.ImageField(upload_to='qr_code_scanner_images/')
+
+class RFIDTag(models.Model):
+    asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    tag_code = models.CharField(max_length=100)
+
+class IOTDevice(models.Model):
+    asset = models.ForeignKey(FixedAsset, on_delete=models.CASCADE)
+    device_id = models.CharField(max_length=100)
+
+class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+#Contract Management Model
+
+User = get_user_model()
+
+# Choices for industries including "Other" option
+INDUSTRY_CHOICES = [
+    ('Aerospace', 'Aerospace'),
+    ('Agriculture', 'Agriculture'),
+    ('Automotive', 'Automotive'),
+    ('Other', 'Other'),
+]
+
+# Choices for contract categories
+# Customize categories of contracts
+CONTRACT_CATEGORY_CHOICES = [
+    ('Category1', 'Category 1'),
+    ('Category2', 'Category 2'),
+    # Add more categories as needed
+]
+
+class Contract(models.Model):
+    industry = models.CharField(max_length=100, choices=INDUSTRY_CHOICES)
+    category = models.CharField(max_length=100, choices=CONTRACT_CATEGORY_CHOICES)
+    name = models.CharField(max_length=100)
+    date_acquired = models.DateField()
+    expiry_date = models.DateField(blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    documentation = models.FileField(upload_to='contract_documents/')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class ContractDocument(models.Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    document = models.FileField(upload_to='contract_documents/')
+    description = models.TextField()
+
+class ConcernedPeople(models.Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    contact_details = models.CharField(max_length=100)
+
+# Sorting options with verbose names
+SORT_OPTIONS = {
+    'category': _('Category'),
+    'date_created_asc': _('Date Created (Ascending)'),
+    'date_created_desc': _('Date Created (Descending)'),
+    'date_modified_asc': _('Date Modified (Ascending)'),
+    'date_modified_desc': _('Date Modified (Descending)'),
+    'expiry_date_asc': _('Expiry Date (Ascending)'),
+    'expiry_date_desc': _('Expiry Date (Descending)'),
+}
+
+#Vehicle Model 
