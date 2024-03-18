@@ -1,5 +1,3 @@
-# Now let's update the urls.py file:
-
 from django.urls import path
 from .views import RegisterAPI, LoginAPI, LogoutAPI, UserAPI, InventoryItemListAPI, InventoryItemDetailAPI, \
     ExpenseListAPI, ExpenseDetailAPI, IntangibleAssetListAPI, IntangibleAssetDetailAPI, MachineryListAPI, \
