@@ -1144,8 +1144,10 @@ SORT_OPTIONS = {
 ## Models for Asset Selling and Leasing using Blockchain (to be implemented)
 
 class AssetTransaction(models.Model):
-asset = models.ForeignKey(InventoryItem, on_delete=models.CASCADE) 
-seller = models.ForeignKey(CustomUser, related_name='sales', on_delete=models.CASCADE) 
-buyer = models.ForeignKey(CustomUser, related_name='purchases', on_delete=models.CASCADE) 
-price = models.DecimalField(max_digits=10, decimal_places=2) 
-currency = models.CharField(max_length=3) date = models.DateTimeField(auto_now_add=True) is_leased = models.BooleanField(default=False)
+    asset = models.ForeignKey(InventoryItem, on_delete=models.CASCADE) 
+    seller = models.ForeignKey(CustomUser, related_name='sales', on_delete=models.CASCADE) 
+    buyer = models.ForeignKey(CustomUser, related_name='purchases', on_delete=models.CASCADE) 
+    price = models.DecimalField(max_digits=10, decimal_places=2) 
+    currency = models.CharField(max_length=3) 
+    date = models.DateTimeField(auto_now_add=True) 
+    is_leased = models.BooleanField(default=False)
