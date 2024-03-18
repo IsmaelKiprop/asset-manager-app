@@ -519,3 +519,23 @@ class ConcernedPeople(models.Model):
     contact_details = models.CharField(max_length=100)
 
 class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+# Sorting options with verbose names
+SORT_OPTIONS = {
+    'category': _('Category'),
+    'date_created_asc': _('Date Created (Ascending)'),
+    'date_created_desc': _('Date Created (Descending)'),
+    'date_modified_asc': _('Date Modified (Ascending)'),
+    'date_modified_desc': _('Date Modified (Descending)'),
+    'expiry_date_warranty_asc': _('Expiry Date of Warranty (Ascending)'),
+    'expiry_date_warranty_desc': _('Expiry Date of Warranty (Descending)'),
+    'service_date_asc': _('Service Date (Ascending)'),
+    'service_date_desc': _('Service Date (Descending)'),
+    'repair_dates_asc': _('Repair Dates (Ascending)'),
+    'repair_dates_desc': _('Repair Dates (Descending)'),
+    'date_manufactured_asc': _('Date of Manufacture (Ascending)'),
+    'date_manufactured_desc': _('Date of Manufacture (Descending)'),
+}
