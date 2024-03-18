@@ -14,8 +14,10 @@ class RegisterAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         _, token = AuthToken.objects.create(user)
-        return Response({'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
-                         'token': token})
+        return Response({
+            'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
+            'token': token
+        })
 
 class LoginAPI(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
