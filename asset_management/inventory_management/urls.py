@@ -1,78 +1,64 @@
+# Now let's update the urls.py file:
+
 from django.urls import path
-from .views import RegisterAPI, LoginAPI, LogoutAPI, UserAPI, \
-    InventoryItemListAPI, InventoryItemDetailAPI, \
-    ExpenseListAPI, ExpenseDetailAPI, \
-    IntangibleAssetListAPI, IntangibleAssetDetailAPI, \
-    MachineryListAPI, MachineryDetailAPI, \
-    HardwareSoftwareListAPI, HardwareSoftwareDetailAPI, \
-    FurnitureListAPI, FurnitureDetailAPI, \
-    InvestmentListAPI, InvestmentDetailAPI, \
-    FixedAssetListAPI, FixedAssetDetailAPI, \
-    ContractListAPI, ContractDetailAPI, \
-    SavingsListAPI, SavingsDetailAPI, \
-    BudgetListAPI, BudgetDetailAPI, \
-    BankIntegrationListAPI, BankIntegrationDetailAPI, \
-    BillListAPI, BillDetailAPI, \
-    FinancialReportListAPI, FinancialReportDetailAPI
+from .views import RegisterAPI, LoginAPI, LogoutAPI, UserAPI, InventoryItemListAPI, InventoryItemDetailAPI, \
+    ExpenseListAPI, ExpenseDetailAPI, IntangibleAssetListAPI, IntangibleAssetDetailAPI, MachineryListAPI, \
+    MachineryDetailAPI, HardwareSoftwareListAPI, HardwareSoftwareDetailAPI, FurnitureListAPI, FurnitureDetailAPI, \
+    InvestmentListAPI, InvestmentDetailAPI, FixedAssetListAPI, FixedAssetDetailAPI, ContractListAPI, \
+    ContractDetailAPI, SavingsListAPI, SavingsDetailAPI, BudgetListAPI, BudgetDetailAPI, BankIntegrationListAPI, \
+    BankIntegrationDetailAPI, BillListAPI, BillDetailAPI, FinancialReportListAPI, FinancialReportDetailAPI
 
 urlpatterns = [
-    # Authentication
-    path('auth/register/', RegisterAPI.as_view(), name='register'),
-    path('auth/login/', LoginAPI.as_view(), name='login'),
-    path('auth/logout/', LogoutAPI.as_view(), name='logout'),
+    path('api/auth/register/', RegisterAPI.as_view()),
+    path('api/auth/login/', LoginAPI.as_view()),
+    path('api/auth/logout/', LogoutAPI.as_view()),
+    path('api/auth/user/', UserAPI.as_view()),
 
-    # User
-    path('user/', UserAPI.as_view(), name='user'),
+    # Inventory Management URLs
+    path('api/inventory/', InventoryItemListAPI.as_view()),
+    path('api/inventory/<int:pk>/', InventoryItemDetailAPI.as_view()),
 
-    # Inventory Management
-    path('inventory/', InventoryItemListAPI.as_view(), name='inventory_list'),
-    path('inventory/<int:pk>/', InventoryItemDetailAPI.as_view(), name='inventory_detail'),
+    # Expense Management URLs
+    path('api/expense/', ExpenseListAPI.as_view()),
+    path('api/expense/<int:pk>/', ExpenseDetailAPI.as_view()),
 
-    # Expense Management
-    path('expenses/', ExpenseListAPI.as_view(), name='expense_list'),
-    path('expenses/<int:pk>/', ExpenseDetailAPI.as_view(), name='expense_detail'),
+    # Intangible Assets URLs
+    path('api/intangible-assets/', IntangibleAssetListAPI.as_view()),
+    path('api/intangible-assets/<int:pk>/', IntangibleAssetDetailAPI.as_view()),
 
-    # Intangible Assets
-    path('intangible-assets/', IntangibleAssetListAPI.as_view(), name='intangible_asset_list'),
-    path('intangible-assets/<int:pk>/', IntangibleAssetDetailAPI.as_view(), name='intangible_asset_detail'),
+    # Machinery and Vehicles URLs
+    path('api/machinery/', MachineryListAPI.as_view()),
+    path('api/machinery/<int:pk>/', MachineryDetailAPI.as_view()),
 
-    # Machinery and Vehicles
-    path('machinery/', MachineryListAPI.as_view(), name='machinery_list'),
-    path('machinery/<int:pk>/', MachineryDetailAPI.as_view(), name='machinery_detail'),
+    # Hardware and Software URLs
+    path('api/hardware-software/', HardwareSoftwareListAPI.as_view()),
+    path('api/hardware-software/<int:pk>/', HardwareSoftwareDetailAPI.as_view()),
 
-    # Hardware and Software
-    path('hardware-software/', HardwareSoftwareListAPI.as_view(), name='hardware_software_list'),
-    path('hardware-software/<int:pk>/', HardwareSoftwareDetailAPI.as_view(), name='hardware_software_detail'),
+    # Furniture URLs
+    path('api/furniture/', FurnitureListAPI.as_view()),
+    path('api/furniture/<int:pk>/', FurnitureDetailAPI.as_view()),
 
-    # Furniture
-    path('furniture/', FurnitureListAPI.as_view(), name='furniture_list'),
-    path('furniture/<int:pk>/', FurnitureDetailAPI.as_view(), name='furniture_detail'),
+    # Investment URLs
+    path('api/investment/', InvestmentListAPI.as_view()),
+    path('api/investment/<int:pk>/', InvestmentDetailAPI.as_view()),
 
-    # Investments
-    path('investments/', InvestmentListAPI.as_view(), name='investment_list'),
-    path('investments/<int:pk>/', InvestmentDetailAPI.as_view(), name='investment_detail'),
+    # Fixed Assets URLs
+    path('api/fixed-asset/', FixedAssetListAPI.as_view()),
+    path('api/fixed-asset/<int:pk>/', FixedAssetDetailAPI.as_view()),
 
-    # Fixed Assets
-    path('fixed-assets/', FixedAssetListAPI.as_view(), name='fixed_asset_list'),
-    path('fixed-assets/<int:pk>/', FixedAssetDetailAPI.as_view(), name='fixed_asset_detail'),
+    # Contract Management URLs
+    path('api/contract/', ContractListAPI.as_view()),
+    path('api/contract/<int:pk>/', ContractDetailAPI.as_view()),
 
-    # Contracts
-    path('contracts/', ContractListAPI.as_view(), name='contract_list'),
-    path('contracts/<int:pk>/', ContractDetailAPI.as_view(), name='contract_detail'),
-
-    # Financial Management
-    path('savings/', SavingsListAPI.as_view(), name='savings_list'),
-    path('savings/<int:pk>/', SavingsDetailAPI.as_view(), name='savings_detail'),
-
-    path('budgets/', BudgetListAPI.as_view(), name='budget_list'),
-    path('budgets/<int:pk>/', BudgetDetailAPI.as_view(), name='budget_detail'),
-
-    path('bank-integrations/', BankIntegrationListAPI.as_view(), name='bank_integration_list'),
-    path('bank-integrations/<int:pk>/', BankIntegrationDetailAPI.as_view(), name='bank_integration_detail'),
-
-    path('bills/', BillListAPI.as_view(), name='bill_list'),
-    path('bills/<int:pk>/', BillDetailAPI.as_view(), name='bill_detail'),
-
-    path('financial-reports/', FinancialReportListAPI.as_view(), name='financial_report_list'),
-    path('financial-reports/<int:pk>/', FinancialReportDetailAPI.as_view(), name='financial_report_detail'),
+    # Financial Management URLs
+    path('api/savings/', SavingsListAPI.as_view()),
+    path('api/savings/<int:pk>/', SavingsDetailAPI.as_view()),
+    path('api/budget/', BudgetListAPI.as_view()),
+    path('api/budget/<int:pk>/', BudgetDetailAPI.as_view()),
+    path('api/bank-integration/', BankIntegrationListAPI.as_view()),
+    path('api/bank-integration/<int:pk>/', BankIntegrationDetailAPI.as_view()),
+    path('api/bill/', BillListAPI.as_view()),
+    path('api/bill/<int:pk>/', BillDetailAPI.as_view()),
+    path('api/financial-report/', FinancialReportListAPI.as_view()),
+    path('api/financial-report/<int:pk>/', FinancialReportDetailAPI.as_view()),
 ]
