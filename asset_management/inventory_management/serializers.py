@@ -1,26 +1,12 @@
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from .models import InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract
+# Now let's update the serializers.py file:
 
-CustomUser = get_user_model()
+from rest_framework import serializers
+from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, HardwareSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialReport
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        email = validated_data.get('email')
-        if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("This email address is already in use.")
-        
-        user = CustomUser.objects.create_user(
-            email=email,
-            username=validated_data['username'],
-            password=validated_data['password']
-        )
-        return user
+        fields = '__all__'
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
