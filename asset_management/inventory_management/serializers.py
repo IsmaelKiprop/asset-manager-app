@@ -1,7 +1,7 @@
 # Now let's update the serializers.py file:
 
 from rest_framework import serializers
-from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, ComputerHardware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialGrowth
+from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, ComputerHardware, ComputerSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialGrowth
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,6 +36,11 @@ class MachinerySerializer(serializers.ModelSerializer):
 class HardwareSoftwareSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComputerHardware
+        fields = '__all__'
+
+class HardwareSoftwareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComputerSoftware
         fields = '__all__'
 
 class FurnitureSerializer(serializers.ModelSerializer):
