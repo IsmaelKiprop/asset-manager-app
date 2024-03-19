@@ -6,7 +6,7 @@ from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machine
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'password']
+        fields = ['id', 'email', 'company_name', 'location', 'number_of_employees', 'industry', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
