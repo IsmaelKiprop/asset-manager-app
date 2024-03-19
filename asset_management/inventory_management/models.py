@@ -1,11 +1,4 @@
 #TO-DO
-
-#Create class Asset and reconstruct model
-#Reconstruct User and CustomUser
-
-
-
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -13,27 +6,33 @@ import binascii
 import os
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, first_name=first_name, last_name=last_name)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, password):
-        user = self.create_user(email=email, first_name=first_name, last_name=last_name, password=password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    company_name = models.CharField(_('company name'), max_length=100)
+    location = models.CharField(_('location'), max_length=100)
+    number_of_employees = models.PositiveIntegerField(_('number of employees'), default=0)
+    industry = models.CharField(_('industry'), max_length=100)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff status'), default=False)
@@ -41,30 +40,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
-
-    class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+    REQUIRED_FIELDS = ['company_name', 'location', 'number_of_employees', 'industry']
 
     def __str__(self):
         return self.email
-
-class AuthToken(models.Model):
-    key = models.CharField(_('key'), max_length=40, primary_key=True)
-    user = models.ForeignKey(CustomUser, related_name='auth_tokens', on_delete=models.CASCADE)
-    created = models.DateTimeField(_('created'), auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        if not self.key:
-            self.key = self.generate_key()
-        return super(AuthToken, self).save(*args, **kwargs)
-
-    def generate_key(self):
-        return binascii.hexlify(os.urandom(20)).decode()
-
-    def __str__(self):
-        return self.key
 
 # Choices for industries
 INDUSTRY_CHOICES = [
