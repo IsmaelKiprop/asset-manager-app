@@ -85,7 +85,7 @@ class Currency(models.Model):
 class Valuation(models.Model):
     asset = models.OneToOneField('Asset', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    #currency = models.ForeignKey(Currency, on_delete=models.CASCADE) changes
 
 # Models for Asset Management
 
@@ -399,7 +399,7 @@ class IntangibleAsset(models.Model):
 
     class Meta:
         ordering = ['-date_created', 'name']
-
+        
 # Asset Document model
 class AssetDocument(models.Model):
     asset = models.ForeignKey(IntangibleAsset, on_delete=models.CASCADE)
@@ -553,6 +553,8 @@ class HardwareDocument(models.Model):
     hardware = models.ForeignKey(ComputerHardware, on_delete=models.CASCADE)
     document = models.FileField(upload_to='hardware_documents/')
     description = models.TextField()
+
+    
 
 class ConcernedPeople(models.Model):
     hardware = models.ForeignKey(ComputerHardware, on_delete=models.CASCADE)

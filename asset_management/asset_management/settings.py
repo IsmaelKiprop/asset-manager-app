@@ -86,9 +86,9 @@ WSGI_APPLICATION = 'asset_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'asset_management_db',
-        'USER': 'assets',
-        'PASSWORD': 'assets',
+        'NAME': 'Asset',
+        'USER': 'root',
+        'PASSWORD': 'REAL',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -140,9 +140,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "asset_management_frontend/build/static",
-]
+#STATICFILES_DIRS = [
+    #BASE_DIR / "asset_management_frontend/build/static",
+#]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
