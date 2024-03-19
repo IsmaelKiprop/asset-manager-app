@@ -44,6 +44,57 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+class AuthToken(models.Model):
+    key = models.CharField(max_length=40, primary_key=True)
+    user = models.ForeignKey(CustomUser, related_name='auth_tokens', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super(AuthToken, self).save(*args, **kwargs)
+
+    def generate_key(self):
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    def __str__(self):
+        return self.key
+
+# Models for Company Details
+
+class Company(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    number_of_employees = models.PositiveIntegerField()
+    industry = models.CharField(max_length=100)
+
+# Models for Chat Functionality
+
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(CustomUser, related_name='received_messages', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+# Models for Multicurrency Valuation
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3, unique=True)
+    name = models.CharField(max_length=50)
+
+class Valuation(models.Model):
+    asset = models.OneToOneField('Asset', on_delete=models.CASCADE)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+
+# Models for Asset Management
+
+class Asset(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    description = models.TextField()
+    photo = models.ImageField(upload_to='asset_photos/')
+
 # Choices for industries
 INDUSTRY_CHOICES = [
     ('Aerospace', 'Aerospace'),
