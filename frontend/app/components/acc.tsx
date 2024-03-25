@@ -43,3 +43,31 @@ const SideNav = () => {
     </nav>
   );
 };
+const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
+  return (
+    <nav>
+      <div className="flex items-center mb-4">
+        <button
+          className="bg-slate-900/10 hover:bg-[#eeeeee]/10 hover:text-[#fec300] py-2 px-4 rounded-full flex items-center"
+          onClick={toggleDropdown}
+        >
+          <FaHeadphones />
+          <a href="/support" className="ml-4">
+            Contact Support
+          </a>
+        </button>
+        <FaPowerOff className="ml-4" />
+      </div>
+      {isDropdownOpen && (
+        <div className="dropdown-content">
+          {/* Dropdown content goes here */}
+        </div>
+      )}
+    </nav>
+  );
+};

@@ -1,0 +1,1 @@
+export const assets = ["Intagible assets", "Machinery", "Vehicles", "Computer Hardware", "Computer Software", "Furniture", "Fixed assets", "Contracts"]
