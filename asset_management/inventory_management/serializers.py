@@ -4,9 +4,10 @@ from rest_framework import serializers
 from .models import CustomUser, InventoryItem, Expense, IntangibleAsset, Machinery, ComputerHardware, ComputerSoftware, Furniture, Investment, FixedAsset, Contract, Savings, Budget, BankIntegration, Bill, FinancialGrowth
 
 class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'company_name', 'location', 'number_of_employees', 'industry', 'password']
+        fields = ['id', 'email', 'company_name', 'location', 'number_of_employees', 'industry', 'first_name', 'last_name', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
