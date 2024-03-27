@@ -21,24 +21,21 @@ class RegisterAPI(generics.GenericAPIView):
 
 class LoginAPI(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
-    authentication_classes = (TokenAuthentication,)
     serializer_class = CustomUserSerializer
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
 
-        user = CustomUser.objects.filter(email=email).first()
+        user = authenticate(email=email, password=password)
 
-        if user is None:
+        if user:
+            _, token = AuthToken.objects.create(user)
+            serializer = CustomUserSerializer(user)
+            # Include user's first name in the response data
+            return Response({'user': serializer.data, 'token': token})
+        else:
             return Response({'error': 'Invalid credentials'}, status=400)
-
-        if not user.check_password(password):
-            return Response({'error': 'Invalid credentials'}, status=400)
-
-        _, token = AuthToken.objects.create(user)
-        return Response({'user': CustomUserSerializer(user, context=self.get_serializer_context()).data,
-                         'token': token})
 
 class LogoutAPI(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
